@@ -1,22 +1,29 @@
 import Koa from 'koa';
 import Router from '@koa/router';
 import cors from '@koa/cors';
+import bodyParser from 'koa-bodyparser';
+import ordersRouter from './routes/orders';
 
 const app = new Koa();
 const router = new Router();
 
 // Enable CORS for React app on localhost:3000
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
-// Dummy endpoint
+// Body parser middleware for JSON requests
+app.use(bodyParser());
+
+// Health check endpoint
 router.get('/api/health', async (ctx) => {
   ctx.body = {
     status: 'ok',
     message: 'Server is running!',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 });
 
@@ -27,13 +34,16 @@ router.get('/api/dummy', async (ctx) => {
     data: {
       id: 1,
       name: 'Dummy Data',
-      items: ['item1', 'item2', 'item3']
-    }
+      items: ['item1', 'item2', 'item3'],
+    },
   };
 });
 
+// Mount routes
 app.use(router.routes());
 app.use(router.allowedMethods());
+app.use(ordersRouter.routes());
+app.use(ordersRouter.allowedMethods());
 
 const PORT = process.env.PORT || 3001;
 
@@ -42,4 +52,3 @@ app.listen(PORT, () => {
   console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
   console.log(`📡 Dummy endpoint: http://localhost:${PORT}/api/dummy`);
 });
-
