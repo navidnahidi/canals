@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { config } from './env';
 import { Customer } from '../models/Customer';
 import { Product } from '../models/Product';
 import { Warehouse } from '../models/Warehouse';
@@ -8,14 +9,14 @@ import { OrderItem } from '../models/OrderItem';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5433', 10),
-  username: process.env.DB_USER || 'canals',
-  password: process.env.DB_PASSWORD || 'canals',
-  database: process.env.DB_NAME || 'canals',
+  host: config.database.host,
+  port: config.database.port,
+  username: config.database.username,
+  password: config.database.password,
+  database: config.database.database,
   entities: [Customer, Product, Warehouse, WarehouseInventory, Order, OrderItem],
   synchronize: false, // Use migrations instead of auto-sync
-  logging: process.env.NODE_ENV === 'development',
+  logging: config.isDevelopment,
   migrations: ['src/migrations/**/*.ts'],
   migrationsTableName: 'migrations',
   subscribers: ['src/subscribers/**/*.ts'],

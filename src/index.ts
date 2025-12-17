@@ -5,14 +5,18 @@ import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import ordersRouter from './routes/orders';
 import { AppDataSource } from './config/database';
+import { config, validateEnv } from './config/env';
+
+// Validate environment variables
+validateEnv();
 
 const app = new Koa();
 const router = new Router();
 
-// Enable CORS for React app on localhost:3000
+// Enable CORS
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: config.corsOrigin,
     credentials: true,
   })
 );
@@ -21,16 +25,17 @@ app.use(
 app.use(bodyParser());
 
 // Health check endpoint
-router.get('/api/health', async (ctx) => {
+router.get(`${config.apiPrefix}/health`, async (ctx) => {
   ctx.body = {
     status: 'ok',
     message: 'Server is running!',
     timestamp: new Date().toISOString(),
+    environment: config.nodeEnv,
   };
 });
 
 // Another dummy endpoint
-router.get('/api/dummy', async (ctx) => {
+router.get(`${config.apiPrefix}/dummy`, async (ctx) => {
   ctx.body = {
     message: 'This is a dummy endpoint',
     data: {
@@ -47,17 +52,16 @@ app.use(router.allowedMethods());
 app.use(ordersRouter.routes());
 app.use(ordersRouter.allowedMethods());
 
-const PORT = process.env.PORT || 3001;
-
 // Initialize database connection
 AppDataSource.initialize()
   .then(() => {
     console.log('✅ Database connected successfully');
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
-      console.log(`📡 Dummy endpoint: http://localhost:${PORT}/api/dummy`);
+    app.listen(config.port, () => {
+      console.log(`🚀 Server running on http://localhost:${config.port}`);
+      console.log(`🌍 Environment: ${config.nodeEnv}`);
+      console.log(`📡 Health check: http://localhost:${config.port}${config.apiPrefix}/health`);
+      console.log(`📡 Dummy endpoint: http://localhost:${config.port}${config.apiPrefix}/dummy`);
     });
   })
   .catch((error: Error) => {

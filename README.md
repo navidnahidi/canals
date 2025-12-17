@@ -70,13 +70,44 @@ docker compose down -v
 npm install
 ```
 
+### Environment Setup
+
+1. Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+2. Update the `.env` file with your local settings (defaults should work for local development)
+
+### Running Migrations
+
+Before starting the server, run the database migrations:
+
+```bash
+npm run migration:run
+```
+
+### Seeding the Database
+
+To populate the database with test data:
+
+```bash
+npm run seed
+```
+
+This will create:
+- 3 products (Laptop, Wireless Mouse, USB-C Cable)
+- 3 warehouses (San Francisco, Los Angeles, Seattle)
+- Inventory linking products to warehouses
+
 ### Running the Server
 
 ```bash
 npm run dev
 ```
 
-The server will start on `http://localhost:3001` (or the port specified in `PORT` environment variable).
+The server will start on `http://localhost:3001` (or the port specified in `.env`).
 
 ### Building for Production
 
@@ -85,32 +116,79 @@ npm run build
 npm run start:prod
 ```
 
+## Environment Variables
+
+All environment variables are configured in the `.env` file. See `.env.example` for the complete list.
+
+### Required Variables
+
+| Variable | Description | Default | Example |
+|----------|-------------|---------|---------|
+| `NODE_ENV` | Environment mode | `development` | `production` |
+| `PORT` | Server port | `3001` | `8080` |
+| `DB_HOST` | Database host | `localhost` | `db.example.com` |
+| `DB_PORT` | Database port | `5433` | `5432` |
+| `DB_USERNAME` | Database user | `canals` | `myuser` |
+| `DB_PASSWORD` | Database password | `canals` | `securepassword` |
+| `DB_DATABASE` | Database name | `canals` | `mydb` |
+
+### Optional Variables
+
+| Variable | Description | Default | Example |
+|----------|-------------|---------|---------|
+| `API_PREFIX` | API route prefix | `/api` | `/v1` |
+| `CORS_ORIGIN` | CORS allowed origin | `http://localhost:3000` | `https://example.com` |
+
+### Production Configuration
+
+For production deployment, create a `.env.production` file or set environment variables directly:
+
+```bash
+NODE_ENV=production
+PORT=3001
+DB_HOST=your-db-host
+DB_PORT=5432
+DB_USERNAME=your-db-user
+DB_PASSWORD=your-secure-password
+DB_DATABASE=your-db-name
+CORS_ORIGIN=https://your-frontend-domain.com
+```
+
+⚠️ **Security Note:** Never commit the `.env` file to version control. It's already in `.gitignore`.
+
 ## Project Structure
 
 ```
 src/
-  └── index.ts    # Main application entry point
+├── config/           # Configuration files
+│   ├── database.ts   # TypeORM configuration
+│   ├── env.ts        # Environment variable validation
+│   └── runMigrations.ts
+├── controllers/      # Request handlers
+├── models/          # TypeORM entities
+├── repositories/    # Data access layer
+├── routes/          # API routes
+├── services/        # Business logic
+├── types/           # TypeScript type definitions
+├── validators/      # Zod validation schemas
+├── migrations/      # Database migrations
+├── scripts/         # Utility scripts
+└── index.ts         # Application entry point
 ```
 
-## Environment Variables
+## API Scripts
 
-- `PORT` - Server port (default: 3001)
-- `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://canals:canals@localhost:5433/canals`)
-- `DISTANCE_UNIT` - Distance unit for warehouse selection: `km` (default) or `miles`
-- `NODE_ENV` - Environment: `development` or `production`
-
-## Configuration
-
-### Distance Units
-
-The system supports both kilometers and miles for warehouse distance calculations. Set the `DISTANCE_UNIT` environment variable:
-
-```bash
-# Use kilometers (default)
-DISTANCE_UNIT=km
-
-# Use miles
-DISTANCE_UNIT=miles
-```
-
-This affects warehouse selection - the system will find the warehouse closest to the shipping address using the configured unit.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server with hot reload |
+| `npm run build` | Build for production |
+| `npm run start` | Start server (requires build first) |
+| `npm run migration:run` | Run database migrations |
+| `npm run migration:revert` | Revert last migration |
+| `npm run migration:show` | Show migration status |
+| `npm run db:reset` | Drop all tables (⚠️ destructive) |
+| `npm run seed` | Seed database with test data |
+| `npm run lint` | Run ESLint |
+| `npm run lint:fix` | Fix ESLint errors |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check code formatting |
