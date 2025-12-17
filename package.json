@@ -14,7 +14,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,json}\"",
     "migration:run": "ts-node src/config/runMigrations.ts",
     "migration:revert": "ts-node -r reflect-metadata ./node_modules/typeorm/cli.js migration:revert -d src/config/database.ts",
-    "migration:show": "ts-node -r reflect-metadata ./node_modules/typeorm/cli.js migration:show -d src/config/database.ts"
+    "migration:show": "ts-node -r reflect-metadata ./node_modules/typeorm/cli.js migration:show -d src/config/database.ts",
+    "db:reset": "ts-node src/scripts/resetDatabase.ts",
+    "seed": "ts-node src/scripts/seedDatabase.ts"
   },
   "keywords": [],
   "author": "",
@@ -27,7 +29,8 @@
     "koa-bodyparser": "^4.4.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.14",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",

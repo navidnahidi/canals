@@ -96,3 +96,21 @@ src/
 
 - `PORT` - Server port (default: 3001)
 - `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://canals:canals@localhost:5433/canals`)
+- `DISTANCE_UNIT` - Distance unit for warehouse selection: `km` (default) or `miles`
+- `NODE_ENV` - Environment: `development` or `production`
+
+## Configuration
+
+### Distance Units
+
+The system supports both kilometers and miles for warehouse distance calculations. Set the `DISTANCE_UNIT` environment variable:
+
+```bash
+# Use kilometers (default)
+DISTANCE_UNIT=km
+
+# Use miles
+DISTANCE_UNIT=miles
+```
+
+This affects warehouse selection - the system will find the warehouse closest to the shipping address using the configured unit.
